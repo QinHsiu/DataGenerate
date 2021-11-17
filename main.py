@@ -30,6 +30,13 @@ if __name__ == '__main__':
    config["data_length"]=data_length
    config["use_mile"]=True #使用里程来计算四急（每50km发生四急（0~1）次）
 
+   """添加三个输入信息，分别表示夜间行驶速度、通勤行驶速度、白天行驶速度,时间：2021/11/16"""
+   """在代码中使用的随机生成，区间分别为[20000,30000),[20000,25000),[10000,20000)"""
+   # other_thing["night_driving_distance"]=30000
+   # other_thing["commute_driving_distance"] = 25000
+   # other_thing["daytime_driving_distance"] = 20000
+
+
    #config["month"]=int(input("Please input the number of the month that you want to know!"))
    dataGenerate(driver_habit,other_thing,config)
 

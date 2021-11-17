@@ -65,11 +65,10 @@ def calculate(driver_habit
         week_data[k] = 0
 
     """正常行驶速度,分别表示夜间、通勤、日常，单位m/h"""
-    night_driving_distance = 30000
-    commute_driving_distance=25000
-    daytime_driving_distance = 20000
+    night_driving_distance = other_thing["night_driving_distance"]
+    commute_driving_distance=other_thing["commute_driving_distance"]
+    daytime_driving_distance = other_thing["daytime_driving_distance"]
 
-    #random.seed(seeds) #设置随机数种子
     """夜间出行次数与夜间里程数目"""
     week_data["week_nighttime_count"] += int(5 * driver_habit["night_driving"])+int(2 * (1-driver_habit["weekend_home"]))
     week_data["week_nighttime_mile"] = night_driving_distance * (week_data["week_nighttime_count"])
@@ -111,7 +110,7 @@ def calculate(driver_habit
 
     distance_total=week_data["week_nighttime_mile"]+week_data["week_commute_mile"]+trip_distance
     week_data["week_mileage"] += distance_total
-    week_data["week_driving_time"]=distance_total//daytime_driving_distance  # 平均时速为30km/h
+    week_data["week_driving_time"]=distance_total//daytime_driving_distance*3600  # 平均时速为30km/h,计算时间再乘以3600
     week_data["week_count"]=week_data["week_nighttime_count"]+week_data["week_commute_count"]+trip_count
 
     four_thing_count=0
@@ -244,7 +243,7 @@ def dataGenerate(driver_habit,other_thing,config):
 
 
 
-    p=np.arange(0,1,0.005).tolist()
+    p=np.arange(0,2,0.005).tolist()
     wcc=list(range(14,22)) #一周通勤次数
 
 
@@ -269,6 +268,13 @@ def dataGenerate(driver_habit,other_thing,config):
         other_thing["random_thing_possibility"]=random.sample(p,1)[0]
         other_thing["week_commute_count"]=random.sample(wcc,1)[0]
 
+        """设置通勤速度、日间行驶速度、夜间行驶速度：2021/11/16"""
+        other_thing["night_driving_distance"] = random.sample(range(20000,30000,1000),1)[0]
+        other_thing["commute_driving_distance"] = random.sample(range(20000,25000,1000),1)[0]
+        other_thing["daytime_driving_distance"] = random.sample(range(10000,20000,1000),1)[0]
+
+
+
         for m in data_month:
             if m in long_term:
                 h=7
@@ -276,7 +282,6 @@ def dataGenerate(driver_habit,other_thing,config):
                 h=3
             else:
                 h=None
-            #random.seed(i)
             # 为了防止两次随机破环数据的连续性,计算一周的情况，2021/11/13
             week_data=calculate(driver_habit=driver_habit,holiday_num=h,other_thing=other_thing,config=config,seeds=i)
             for t_w in week_data:
@@ -301,18 +306,9 @@ def dataGenerate(driver_habit,other_thing,config):
                     for t_m in month_data:
                         data.loc[i, t_m] = month_data[t_m]
 
-            #print(i,month_data["month_harsh_line"],month_data["month_harsh_turn"])
-
-
             """求一年的数据"""
             for m_y in range(len(list(year_data.keys()))):
                 year_data[list(year_data.keys())[m_y]]+=month_data[list(month_data.keys())[m_y]]
-
-            #print(i, year_data["year_harsh_line"], year_data["year_harsh_turn"])
-            #print(2,month_data["month_harsh_line"],month_data["month_harsh_turn"])
-            #print(2,year_data["year_harsh_line"],year_data["year_harsh_turn"])
-            #print("\n")
-
 
         """汇总一年的数据"""
         for t_y in year_data:
