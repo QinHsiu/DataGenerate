@@ -5,6 +5,16 @@ import numpy as np
 import pandas as pd
 
 
+"""获取城市"""
+def getCity():
+    pass
+
+"""获取环境影响"""
+def getEnv():
+    pass
+
+
+
 
 """生成数据集标签"""
 def getName():
@@ -29,9 +39,6 @@ def getName():
     data.append("trip_radius")
     with open("dataGenerate.csv", "w+") as f:
         f.write(",".join(data))
-
-
-
 
 
 """泊松分布"""
