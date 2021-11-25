@@ -167,8 +167,7 @@ def GenerateConfig():
     else:
         config["use_mile"] = True  # 使用里程来计算四急（每50km发生四急（0~1）次）
         dataGenerate(driver_habit, other_thing, config)
-
-        threading.Timer(10, timeToClose, args=(root,)).start()  # 10秒关闭
+        threading.Timer(5, timeToClose, args=(root,)).start()  # 5秒关闭
         root.mainloop()
         root.destroy()
 

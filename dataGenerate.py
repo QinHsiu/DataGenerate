@@ -2,40 +2,7 @@ import random
 from utils import *
 
 
-"""生成数据集"""
-"""输入数据介绍"""
-"""用户驾驶行为习惯"""
-driver_habit = {
-    "night_driving": 0  # 表明是否倾向与夜间出行,数据区间[0,1]表示夜间出行的频率
-    , "short_term_trip": 0  # 表明是否倾向于短途旅行，数据区间[0,1]表示短期出行的偏好程度
-    ,'long_term_trip':0 #表明是否倾向于长途旅行
-    , "weekend_home": 0  # 表明周末是否很少出门，数据区间[0,1]表示周末在家的程度
-}
-
-"""其他事情，例如加班、意外事件等"""
-other_thing = {
-    "overtime_count": 0   # 周末加班的概率[0,1]
-    ,"random_thing_possibility":0 #随机距离
-    ,'week_communte_count':20 # 一周通勤次数
-}
-
-
-
-
-# 驾驶习惯
-normal_driving_distance = [10000, 40000]  # 单位为M
-reference = 20000  # 正常行驶参考值
-normal_communte_distance = [20000, 30000]  # 单位为M
-referance = 25000  # 通勤正常参考值
-
-random_thing_possibility = 0.5  # 发生随机事件的概率
-weekend_out = 0.6  # 周末出行的概率
-data_length = 1  # 生成的数据长度
-
 """计算一周的里程数"""
-"""一周里程正常取值区间为[200000,400000]"""
-"""每周行程数目为20次，注意节假日"""
-"""一般车速为30~50KM"""
 def calculate(driver_habit
               , holiday_num=None
               ,other_thing=None
@@ -57,30 +24,29 @@ def calculate(driver_habit
             , "nighttime_count"  # 夜间行驶次数
             , "tired_trip_mile"  # 疲劳驾驶里程数
             , "tired_trip"]:  # 疲劳驾驶次数
-            week_data[head + rear] = 0
+            week_data[head + rear] = 0 #所有值初始化为0
     week_data["trip_radius"] = 0  # 行程半径
 
-    """初始化初值"""
-    for k in week_data:
-        week_data[k] = 0
 
-    """正常行驶速度,分别表示夜间、通勤、日常，单位m/h"""
-    night_driving_distance = other_thing["night_driving_distance"]
-    commute_driving_distance=other_thing["commute_driving_distance"]
-    daytime_driving_distance = other_thing["daytime_driving_distance"]
+    """夜间、通勤、日常的正常行驶速度，单位m/h"""
+    night_driving_speed = other_thing["night_driving_speed"]
+    commute_driving_speed=other_thing["commute_driving_speed"]
+    daytime_driving_speed = other_thing["daytime_driving_speed"]
 
-    """夜间出行次数与夜间里程数目"""
+    """夜间出行次数、夜间里程数与一周夜间行驶的时长"""
     week_data["week_nighttime_count"] += int(5 * driver_habit["night_driving"])+int(2 * (1-driver_habit["weekend_home"]))
-    week_data["week_nighttime_mile"] = night_driving_distance * (week_data["week_nighttime_count"])
+    week_data["week_nighttime_mile"] = night_driving_speed * week_data["week_nighttime_count"]*other_thing["night_driving_time"]
+    night_driving_time=week_data["week_nighttime_count"]*other_thing["night_driving_time"]
 
-    """初始化旅游距离和次数"""
+    """初始化旅游距离和次数(以及旅游的时长)"""
     trip_distance=0
     trip_count=0
 
     if holiday_num == None:
-        """一周通勤次数与里程数"""
+        """一周通勤次数、里程数与通勤时长"""
         week_data["week_commute_count"]=other_thing["week_commute_count"] #一周通勤次数
-        week_data["week_commute_mile"]=other_thing["week_commute_count"]*commute_driving_distance
+        week_data["week_commute_mile"]=other_thing["week_commute_count"]*commute_driving_speed*other_thing["commute_driving_time"]
+        commute_driving_time=other_thing["week_commute_count"] * other_thing["commute_driving_time"]
 
         """表明用户会出去旅游"""
         if driver_habit["weekend_home"]<1:
@@ -94,9 +60,11 @@ def calculate(driver_habit
         if holiday_num==7:
             week_data["week_commute_count"]=0
             week_data["week_commute_mile"]=0
+            commute_driving_time =0
         else:
             week_data["week_commute_count"]=other_thing["week_commute_count"]-2*holiday_num
-            week_data["week_commute_mile"]=other_thing["week_commute_count"]*commute_driving_distance
+            week_data["week_commute_mile"]=other_thing["week_commute_count"]*commute_driving_speed*other_thing["commute_driving_time"]
+            commute_driving_time = other_thing["week_commute_count"] * other_thing["commute_driving_time"]
 
         """旅行距离"""
         if driver_habit["weekend_home"]<1:
@@ -105,15 +73,13 @@ def calculate(driver_habit
             trip_count=short_term_trip+long_term_trip
             trip_distance=short_term_trip*random.sample(range(30000,100000),1)[0]+long_term_trip*random.sample(range(100000,400000),1)[0]
 
-    #print(trip_distance)
-    #print(week_data["week_nighttime_mile"],week_data["week_commute_mile"])
+
 
     distance_total=week_data["week_nighttime_mile"]+week_data["week_commute_mile"]+trip_distance
     week_data["week_mileage"] += distance_total
-    week_data["week_driving_time"]=distance_total//daytime_driving_distance*3600  # 平均时速为30km/h,计算时间再乘以3600
+    week_data["week_driving_time"]=night_driving_time+commute_driving_time+trip_distance//daytime_driving_speed*3600  # 平均时速为30km/h,计算时间再乘以3600
     week_data["week_count"]=week_data["week_nighttime_count"]+week_data["week_commute_count"]+trip_count
 
-    four_thing_count=0
     """使用一周行程里程数或者一周行程次数来估计四急次数"""
     if config["use_mile"]==True:
         tp = random.sample([0, 1], 1)[0]
@@ -121,7 +87,6 @@ def calculate(driver_habit
 
         tp = random.sample([0, 1], 1)[0]
         week_data["week_harsh_acc"]=week_data["week_mileage"]//50000*tp//4
-
 
         tp = random.sample([0, 1], 1)[0]
         week_data["week_harsh_brk"]=week_data["week_mileage"]//50000*tp//4
@@ -163,9 +128,6 @@ def calculate(driver_habit
                 four_thing_count-=1
                 week_data["week_harsh_acc"]-=1
             continue
-
-
-
 
 
     #当一周行驶距离大于400000km发生一次疲劳驾驶
@@ -243,7 +205,7 @@ def dataGenerate(driver_habit,other_thing,config):
 
 
 
-    p=np.arange(0,2,0.005).tolist()
+    p=np.arange(0,1,0.0005).tolist()
     wcc=list(range(14,22)) #一周通勤次数
 
 
@@ -269,9 +231,13 @@ def dataGenerate(driver_habit,other_thing,config):
         other_thing["week_commute_count"]=random.sample(wcc,1)[0]
 
         """设置通勤速度、日间行驶速度、夜间行驶速度：2021/11/16"""
-        other_thing["night_driving_distance"] = random.sample(range(20000,30000,1000),1)[0]
-        other_thing["commute_driving_distance"] = random.sample(range(20000,25000,1000),1)[0]
-        other_thing["daytime_driving_distance"] = random.sample(range(10000,20000,1000),1)[0]
+        other_thing["night_driving_speed"] = random.sample(range(20000,30000,1000),1)[0]
+        other_thing["commute_driving_speed"] = random.sample(range(20000,25000,1000),1)[0]
+        other_thing["daytime_driving_speed"] = random.sample(range(10000,20000,1000),1)[0]
+
+        """设置单次通勤时长、单次夜间行驶时长,2021/11/25"""
+        other_thing["commute_driving_time"]=random.sample(np.arange(0.2,1,0.005).tolist(),1)[0]
+        other_thing["night_driving_time"]=random.sample(np.arange(0.2,1,0.005).tolist(),1)[0]
 
 
 
