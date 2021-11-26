@@ -10,7 +10,8 @@ from main import *
 from utils import *
 
 def getData(*args):
-    print("getdata")
+    pass
+    #print("getdata")
 
 
 
@@ -167,7 +168,7 @@ def GenerateConfig():
     other_thing["nds_mi"],other_thing["nds_ma"]=map(eval,entry_night.get().split(" "))
     other_thing["cds_mi"],other_thing["cds_ma"]=map(eval,entry_commune.get().split(" "))
     other_thing["dds_mi"],other_thing["dds_ma"]=map(eval,entry_daytime.get().split(" "))
-    print(other_thing)
+    # print(other_thing)
 
 
 
