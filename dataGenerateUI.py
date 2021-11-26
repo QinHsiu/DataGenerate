@@ -81,58 +81,58 @@ def GenerateComponent(root):
     entry_data_length.place(x=225,y=200,width=100,height=25)
 
     """数据分布函数"""
-    comvalue = tkinter.StringVar()
+    comvalue = tkinter.StringVar(value="Poisson")
     entry_prob_count = ttk.Combobox(root, width=100, textvariable=comvalue)
-    entry_prob_label=tkinter.Label(root,text="count prob",justify=tkinter.RIGHT,width=100)
-    entry_prob_label.place(x=125,y=300,width=100,height=25)
-    entry_prob_count["value"]=("1","2","3")
-    entry_prob_count.current(0) #当前默认为1
+    entry_prob_label=tkinter.Label(root,text="count prob(四急发生次数的分布函数)",justify=tkinter.RIGHT,width=100)
+    entry_prob_label.place(x=0,y=300,width=225,height=25)
+    entry_prob_count["value"]=("Poisson:泊松","Binom:伯努利","Norm:正态","Beta:贝塔","Expon:指数")
+    entry_prob_count.current(0) #当前默认为0
     entry_prob_count.bind("<<ComboboxSelected>>",getData) #绑定事件
     entry_prob_count.pack()
     entry_prob_count.place(x=225,y=300,width=100,height=25)
 
     """数据分布函数"""
-    comvalue = tkinter.StringVar()
+    comvalue = tkinter.StringVar(value="Norm")
     entry_prob_mile = ttk.Combobox(root, width=100, textvariable=comvalue)
-    entry_prob_mile_label=tkinter.Label(root,text="mile prob",justify=tkinter.RIGHT,width=100)
-    entry_prob_mile_label.place(x=125,y=400,width=100,height=25)
-    entry_prob_mile["value"]=("1","2","3")
-    entry_prob_mile.current(0) #当前默认为1
+    entry_prob_mile_label=tkinter.Label(root,text="mile prob(里程数的分布函数)",justify=tkinter.RIGHT,width=100)
+    entry_prob_mile_label.place(x=0,y=400,width=225,height=25)
+    entry_prob_mile["value"]=("Poisson:泊松","Binom:伯努利","Norm:正态","Beta:贝塔","Expon:指数")
+    entry_prob_mile.current(2) #当前默认为2
     entry_prob_mile.bind("<<ComboboxSelected>>",getData) #绑定事件
     entry_prob_mile.pack()
     entry_prob_mile.place(x=225,y=400,width=100,height=25)
 
     """数据阈值，输入最小与最大值"""
     # 创建文本框初始值
-    varName = tkinter.StringVar(value='')
+    varName = tkinter.StringVar(value='10 40')
     # 设置文本框
     entry_night = tkinter.Entry(root,width=100, textvariable=varName)
     #设置标签名
-    labelName=tkinter.Label(root,text="Night speed:",justify=tkinter.RIGHT,width=100)
+    labelName=tkinter.Label(root,text="Night speed(夜间速度阈值,(单位km/h)):",justify=tkinter.RIGHT,width=100)
     #设置位置
-    labelName.place(x=625,y=200,width=100,height=25)
+    labelName.place(x=475,y=200,width=245,height=25)
     #设置文本框位置
     entry_night.place(x=725,y=200,width=100,height=25)
 
     # 创建文本框初始值
-    varName = tkinter.StringVar(value='')
+    varName = tkinter.StringVar(value='30 50')
     # 设置文本框
     entry_daytime = tkinter.Entry(root,width=100, textvariable=varName)
     #设置标签名
-    labelName=tkinter.Label(root,text="Daytime speed:",justify=tkinter.RIGHT,width=100)
+    labelName=tkinter.Label(root,text="Daytime speed(日间速度阈值,(单位km/h)):",justify=tkinter.RIGHT,width=100)
     #设置位置
-    labelName.place(x=625,y=300,width=100,height=25)
+    labelName.place(x=475,y=300,width=245,height=25)
     #设置文本框位置
     entry_daytime.place(x=725,y=300,width=100,height=25)
 
     # 创建文本框初始值
-    varName = tkinter.StringVar(value='')
+    varName = tkinter.StringVar(value='20 30')
     # 设置文本框
     entry_commune = tkinter.Entry(root,width=100, textvariable=varName)
     #设置标签名
-    labelName=tkinter.Label(root,text="Commune speed:",justify=tkinter.RIGHT,width=100)
+    labelName=tkinter.Label(root,text="Commune speed(通勤速度阈值,(单位km/h)):",justify=tkinter.RIGHT,width=100)
     #设置位置
-    labelName.place(x=625,y=400,width=100,height=25)
+    labelName.place(x=475,y=400,width=245,height=25)
     #设置文本框位置
     entry_commune.place(x=725,y=400,width=100,height=25)
 
@@ -162,6 +162,15 @@ def GenerateConfig():
     """配置信息"""
     driver_habit = {}
     other_thing = {}
+
+    """获取三种速度的阈值:2021/11/26"""
+    other_thing["nds_mi"],other_thing["nds_ma"]=map(eval,entry_night.get().split(" "))
+    other_thing["cds_mi"],other_thing["cds_ma"]=map(eval,entry_commune.get().split(" "))
+    other_thing["dds_mi"],other_thing["dds_ma"]=map(eval,entry_daytime.get().split(" "))
+    print(other_thing)
+
+
+
     if not config:
         raise ValueError("Please chose your config information!")
     else:

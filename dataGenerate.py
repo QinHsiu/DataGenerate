@@ -225,15 +225,32 @@ def dataGenerate(driver_habit,other_thing,config):
         driver_habit["weekend_home"]=random.sample(p,1)[0]
 
         #if other_thing=={}:
-        """其他事情，例如加班"""
+        """其他事情，例如加班、随机事件、一周通勤次数"""
         other_thing["overtime_count"]=random.sample(p,1)[0]
         other_thing["random_thing_possibility"]=random.sample(p,1)[0]
         other_thing["week_commute_count"]=random.sample(wcc,1)[0]
 
+        """设置三种速度的阈值,分别为夜间、通勤与日间正常行驶速度:2021/11/26"""
+        nds_ma=other_thing["nds_ma"]*1000
+        nds_mi=other_thing["nds_mi"]*1000
+
+        cds_ma=other_thing["cds_ma"]*1000
+        cds_mi=other_thing["cds_mi"]*1000
+
+        dds_ma=other_thing["dds_ma"]*1000
+        dds_mi=other_thing["dds_mi"]*1000
+
+        nds_mi=int(nds_mi)
+        nds_ma=int(nds_ma)
+        cds_mi=int(cds_mi)
+        cds_ma=int(cds_ma)
+        dds_mi=int(dds_mi)
+        dds_ma=int(dds_ma)
+
         """设置通勤速度、日间行驶速度、夜间行驶速度：2021/11/16"""
-        other_thing["night_driving_speed"] = random.sample(range(20000,30000,1000),1)[0]
-        other_thing["commute_driving_speed"] = random.sample(range(20000,25000,1000),1)[0]
-        other_thing["daytime_driving_speed"] = random.sample(range(10000,20000,1000),1)[0]
+        other_thing["night_driving_speed"] = random.sample(range(nds_mi,nds_ma,1),1)[0]
+        other_thing["commute_driving_speed"] = random.sample(range(cds_mi,cds_ma,1),1)[0]
+        other_thing["daytime_driving_speed"] = random.sample(range(dds_mi,dds_ma,1),1)[0]
 
         """设置单次通勤时长、单次夜间行驶时长,2021/11/25"""
         other_thing["commute_driving_time"]=random.sample(np.arange(0.2,1,0.005).tolist(),1)[0]
@@ -251,13 +268,16 @@ def dataGenerate(driver_habit,other_thing,config):
             # 为了防止两次随机破环数据的连续性,计算一周的情况，2021/11/13
             week_data=calculate(driver_habit=driver_habit,holiday_num=h,other_thing=other_thing,config=config,seeds=i)
             for t_w in week_data:
-                data.loc[i,t_w]=week_data[t_w]
+                data.loc[i,t_w]=int(week_data[t_w]) #所有数据均为整型数据
 
             # 计算一个月的驾驶情况:2021/11/13
             if h:
                 week_data_0 = calculate(driver_habit=driver_habit,other_thing=other_thing, config=config, seeds=i)
+                for t_w in week_data_0: #将所有数据变为整型
+                    week_data_0[t_w]=int(week_data_0[t_w])
             else:
                 week_data_0=week_data
+
             for m_l in range(len(list(month_data.keys()))):
                 month_data[list(month_data.keys())[m_l]]=week_data[list(week_data.keys())[m_l]]+3*week_data_0[list(week_data_0.keys())[m_l]]
 
@@ -265,12 +285,12 @@ def dataGenerate(driver_habit,other_thing,config):
             if "month" not in list(config.keys()):
                 """默认使用12月份的数据"""
                 for t_m in month_data:
-                    data.loc[i,t_m]=month_data[t_m]
+                    data.loc[i,t_m]=int(month_data[t_m]) #整型
             else:
                 """使用指定月份的数据"""
                 if config["month"]==m:
                     for t_m in month_data:
-                        data.loc[i, t_m] = month_data[t_m]
+                        data.loc[i, t_m] = int(month_data[t_m]) #整型
 
             """求一年的数据"""
             for m_y in range(len(list(year_data.keys()))):
@@ -278,7 +298,7 @@ def dataGenerate(driver_habit,other_thing,config):
 
         """汇总一年的数据"""
         for t_y in year_data:
-            data.loc[i,t_y]=year_data[t_y]
+            data.loc[i,t_y]=int(year_data[t_y]) #整型
 
 
     data.to_csv("dataGenerate.csv",index=False)
