@@ -27,8 +27,6 @@ entrayOthers=None #其他信息
 root=None #窗口
 
 
-
-
 def GenerateUI(length,width):
     global root
     #初始化窗体
@@ -68,6 +66,7 @@ def GenerateComponent(root):
     global entry_prob_count
     global entry_prob_mile
 
+    """配置信息"""
     # 创建文本框初始值
     varName = tkinter.StringVar(value='')
     # 设置文本框
@@ -76,15 +75,13 @@ def GenerateComponent(root):
     labelName=tkinter.Label(root,text="Data Length:",justify=tkinter.RIGHT,width=100)
     #设置位置
     labelName.place(x=125,y=200,width=100,height=25)
-    #设置文本框
-    #global entryName
     #设置文本框位置
     entry_data_length.place(x=225,y=200,width=100,height=25)
 
     """数据分布函数"""
     comvalue = tkinter.StringVar(value="Poisson")
     entry_prob_count = ttk.Combobox(root, width=100, textvariable=comvalue)
-    entry_prob_label=tkinter.Label(root,text="count prob(四急发生次数的分布函数)",justify=tkinter.RIGHT,width=100)
+    entry_prob_label=tkinter.Label(root,text="count prob(四急发生次数的分布函数):",justify=tkinter.RIGHT,width=100)
     entry_prob_label.place(x=0,y=300,width=225,height=25)
     entry_prob_count["value"]=("Poisson:泊松","Binom:伯努利","Norm:正态","Beta:贝塔","Expon:指数")
     entry_prob_count.current(0) #当前默认为0
@@ -95,7 +92,7 @@ def GenerateComponent(root):
     """数据分布函数"""
     comvalue = tkinter.StringVar(value="Norm")
     entry_prob_mile = ttk.Combobox(root, width=100, textvariable=comvalue)
-    entry_prob_mile_label=tkinter.Label(root,text="mile prob(里程数的分布函数)",justify=tkinter.RIGHT,width=100)
+    entry_prob_mile_label=tkinter.Label(root,text="mile prob(里程数的分布函数):",justify=tkinter.RIGHT,width=100)
     entry_prob_mile_label.place(x=0,y=400,width=225,height=25)
     entry_prob_mile["value"]=("Poisson:泊松","Binom:伯努利","Norm:正态","Beta:贝塔","Expon:指数")
     entry_prob_mile.current(2) #当前默认为2
@@ -111,9 +108,9 @@ def GenerateComponent(root):
     #设置标签名
     labelName=tkinter.Label(root,text="Night speed(夜间速度阈值,(单位km/h)):",justify=tkinter.RIGHT,width=100)
     #设置位置
-    labelName.place(x=475,y=200,width=245,height=25)
+    labelName.place(x=400,y=200,width=245,height=25)
     #设置文本框位置
-    entry_night.place(x=725,y=200,width=100,height=25)
+    entry_night.place(x=650,y=200,width=100,height=25)
 
     # 创建文本框初始值
     varName = tkinter.StringVar(value='30 50')
@@ -122,9 +119,9 @@ def GenerateComponent(root):
     #设置标签名
     labelName=tkinter.Label(root,text="Daytime speed(日间速度阈值,(单位km/h)):",justify=tkinter.RIGHT,width=100)
     #设置位置
-    labelName.place(x=475,y=300,width=245,height=25)
+    labelName.place(x=400,y=300,width=245,height=25)
     #设置文本框位置
-    entry_daytime.place(x=725,y=300,width=100,height=25)
+    entry_daytime.place(x=650,y=300,width=100,height=25)
 
     # 创建文本框初始值
     varName = tkinter.StringVar(value='20 30')
@@ -133,9 +130,45 @@ def GenerateComponent(root):
     #设置标签名
     labelName=tkinter.Label(root,text="Commune speed(通勤速度阈值,(单位km/h)):",justify=tkinter.RIGHT,width=100)
     #设置位置
-    labelName.place(x=475,y=400,width=245,height=25)
+    labelName.place(x=400,y=400,width=245,height=25)
     #设置文本框位置
-    entry_commune.place(x=725,y=400,width=100,height=25)
+    entry_commune.place(x=650,y=400,width=100,height=25)
+
+
+    """用户信息:2021/11/28"""
+    # 创建文本框初始值
+    varName = tkinter.StringVar(value='0 1')
+    # 设置文本框
+    entry_night = tkinter.Entry(root,width=100, textvariable=varName)
+    #设置标签名
+    labelName=tkinter.Label(root,text="ndp(用户对夜间行驶的偏好):",justify=tkinter.RIGHT,width=100)
+    #设置位置
+    labelName.place(x=875,y=200,width=200,height=25)
+    #设置文本框位置
+    entry_night.place(x=1075,y=200,width=100,height=25)
+
+    # 创建文本框初始值
+    varName = tkinter.StringVar(value='0 1')
+    # 设置文本框
+    entry_daytime = tkinter.Entry(root,width=100, textvariable=varName)
+    #设置标签名
+    labelName=tkinter.Label(root,text="stp(用户对于短途旅行的偏好):",justify=tkinter.RIGHT,width=100)
+    #设置位置
+    labelName.place(x=875,y=300,width=200,height=25)
+    #设置文本框位置
+    entry_daytime.place(x=1075,y=300,width=100,height=25)
+
+    # 创建文本框初始值
+    varName = tkinter.StringVar(value='0 1')
+    # 设置文本框
+    entry_commune = tkinter.Entry(root,width=100, textvariable=varName)
+    #设置标签名
+    labelName=tkinter.Label(root,text="wh(用户对于周末在家的偏好):",justify=tkinter.RIGHT,width=100)
+    #设置位置
+    labelName.place(x=875,y=400,width=200,height=25)
+    #设置文本框位置
+    entry_commune.place(x=1075,y=400,width=100,height=25)
+
 
 
 """设置定时关闭窗口"""
